@@ -24,6 +24,10 @@ jobs:
           go-version: 1.21
           check-latest: true
 
+      - name: Set Executable Path
+        run: |
+          echo "PATH=$GOPATH/bin:$PATH" >> $GITHUB_ENV
+
       - name: Install tools
         run: make install-tools
 

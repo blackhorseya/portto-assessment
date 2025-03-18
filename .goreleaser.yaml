@@ -64,8 +64,7 @@ dockers:
   - image_templates:
       - "ghcr.io/blackhorseya/portto:{{ .Tag }}"
       - "ghcr.io/blackhorseya/portto:latest"
-    dockerfile: Dockerfile
-    use: buildx
+    dockerfile: goreleaser.dockerfile
     build_flag_templates:
       - "--platform=linux/amd64,linux/arm64"
 
