@@ -6,7 +6,48 @@
 
 ## 專案結構
 
-## 執行方式
+### 根目錄
+
+- Dockerfile
+- Makefile
+- README.Docker.md
+- README.md
+- go.mod
+- go.sum
+- main.go
+- compose.yaml
+- coverage.txt
+- tools.go
+
+### cmd
+
+- restful/ // RESTful API 實作
+- root.go // 根命令設定
+- run.go // 主程式執行設定
+
+### configs
+
+- 配置檔資料夾
+
+### docs
+
+- API 文件與 Swagger 規格
+
+### entity
+
+- 領域模型與介面定義
+
+### internal
+
+- handler/ // HTTP 處理邏輯
+- repository/ // 資料存取層實作
+- shared/ // 共用工具與設定
+
+---
+
+此專案架構基於 Golang Standard Project Layout 衍生而來。
+
+## 設定與配置
 
 在專案根目錄下建立 `.env` 檔案，並填入以下內容：
 
@@ -17,6 +58,8 @@ DB_PASSWORD=password
 DB_USER=postgres
 DB_NAME=portto
 ```
+
+## 執行方式
 
 ### 本地環境
 
@@ -41,8 +84,6 @@ DB_NAME=portto
    ```bash
    docker compose --build --remove-orphans up
    ```
-
-## 設定與配置
 
 ## API 說明
 
