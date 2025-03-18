@@ -66,8 +66,6 @@ dockers:
       - "ghcr.io/blackhorseya/portto:latest"
     dockerfile: goreleaser.dockerfile
     use: buildx
-    build_flag_templates:
-      - "--platform=linux/amd64,linux/arm64"
 
 checksum:
   name_template: "checksums.txt"
