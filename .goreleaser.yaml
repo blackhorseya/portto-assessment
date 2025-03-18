@@ -54,9 +54,6 @@ release:
   github:
     owner: blackhorseya
     name: portto-assessment
-  tag_template: "v{{ .Version }}"
-  changelog:
-    use: github
   footer: >-
 
     ---
