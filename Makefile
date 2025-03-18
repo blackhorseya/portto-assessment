@@ -15,7 +15,7 @@ install-tools: ## Install tools
 
 .PHONY: build
 build: ## Build the application
-	go build -o $(BIN) ./...
+	go build -o $(BIN)/ ./...
 
 .PHONY: test
 test: test-unit
