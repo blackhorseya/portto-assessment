@@ -8,6 +8,8 @@
 
 version: 2
 
+project_name: portto
+
 before:
   hooks:
     # You may remove this if you don't use go modules.
@@ -22,9 +24,12 @@ builds:
       - linux
       - windows
       - darwin
+    goarch:
+      - amd64
+      - arm64
 
 archives:
-  - formats: [tar.gz]
+  - formats: [ tar.gz ]
     # this name template makes the OS and Arch compatible with the results of `uname`.
     name_template: >-
       {{ .ProjectName }}_
@@ -36,7 +41,7 @@ archives:
     # use zip for windows archives
     format_overrides:
       - goos: windows
-        formats: [zip]
+        formats: [ zip ]
 
 changelog:
   sort: asc
@@ -46,8 +51,35 @@ changelog:
       - "^test:"
 
 release:
+  github:
+    owner: blackhorseya
+    name: portto-assessment
+  tag_template: "v{{ .Version }}"
+  changelog:
+    use: github
   footer: >-
 
     ---
 
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
+
+dockers:
+  - image_templates:
+      - "ghcr.io/blackhorseya/portto:{{ .Tag }}"
+      - "ghcr.io/blackhorseya/portto:latest"
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - "--platform=linux/amd64,linux/arm64"
+    goos: [ linux ]
+    goarch: [ amd64, arm64 ]
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+signs:
+  - artifacts: checksum
+    args: [ "--batch", "--yes", "--armor", "--detach-sign" ]
