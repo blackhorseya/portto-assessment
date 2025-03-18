@@ -72,9 +72,6 @@ dockers:
 checksum:
   name_template: "checksums.txt"
 
-snapshot:
-  name_template: "{{ .Tag }}-next"
-
 signs:
   - artifacts: checksum
     args: [ "--batch", "--yes", "--armor", "--detach-sign" ]
