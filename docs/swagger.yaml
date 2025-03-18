@@ -1,0 +1,267 @@
+basePath: /api
+definitions:
+  entity.Coin:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      popularity_score:
+        type: integer
+    type: object
+  handler.createCoinInput:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  handler.updateCoinInput:
+    properties:
+      description:
+        type: string
+    required:
+    - description
+    type: object
+info:
+  contact: {}
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /liveness:
+    get:
+      consumes:
+      - application/json
+      description: Check if the service is alive
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: status
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Liveness check
+      tags:
+      - Health
+  /readiness:
+    get:
+      consumes:
+      - application/json
+      description: Check if the service is ready to accept requests
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: status
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Readiness check
+      tags:
+      - Health
+  /v1/coins:
+    post:
+      consumes:
+      - application/json
+      description: Create a new coin with the given name and description
+      parameters:
+      - description: Coin
+        in: body
+        name: coin
+        required: true
+        schema:
+          $ref: '#/definitions/handler.createCoinInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created coin
+          schema:
+            $ref: '#/definitions/entity.Coin'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new coin
+      tags:
+      - Coins
+  /v1/coins/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a coin by its ID
+      parameters:
+      - description: Coin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a coin by ID
+      tags:
+      - Coins
+    get:
+      consumes:
+      - application/json
+      description: Get a coin by its ID
+      parameters:
+      - description: Coin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Coin
+          schema:
+            $ref: '#/definitions/entity.Coin'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a coin by ID
+      tags:
+      - Coins
+    patch:
+      consumes:
+      - application/json
+      description: Update a coin's description by its ID
+      parameters:
+      - description: Coin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Coin
+        in: body
+        name: coin
+        required: true
+        schema:
+          $ref: '#/definitions/handler.updateCoinInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated coin
+          schema:
+            $ref: '#/definitions/entity.Coin'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a coin by ID
+      tags:
+      - Coins
+  /v1/coins/{id}/poke:
+    post:
+      consumes:
+      - application/json
+      description: Poke a coin by its ID
+      parameters:
+      - description: Coin ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Poked coin
+          schema:
+            $ref: '#/definitions/entity.Coin'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Poke a coin by ID
+      tags:
+      - Coins
+swagger: "2.0"
