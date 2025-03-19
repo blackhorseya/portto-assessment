@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"portto/pkg/loggerx"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"portto/pkg/loggerx"
 )
 
 type InitRouterFn func(*gin.Engine)
@@ -29,7 +29,6 @@ func NewGinServer(log *slog.Logger, debug bool) *GinServer {
 	gin.SetMode(gin.ReleaseMode)
 	if debug {
 		gin.SetMode(gin.DebugMode)
-		middlewares = append(middlewares, gin.Logger())
 	}
 
 	router := gin.New()
