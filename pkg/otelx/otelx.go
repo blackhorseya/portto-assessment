@@ -24,15 +24,17 @@ import (
 type SDK struct {
 	target      string
 	serviceName string
+	verbose     bool
 }
 
 // SetupSDK creates a new OpenTelemetry SDK.
-func SetupSDK(target string, name string) (*SDK, func(), error) {
+func SetupSDK(target string, name string, verbose bool) (*SDK, func(), error) {
 	ctx := contextx.WithContext(context.Background())
 
 	instance := &SDK{
 		target:      target,
 		serviceName: name,
+		verbose:     verbose,
 	}
 
 	clean, err := instance.setupOTelSDK(ctx)
@@ -67,14 +69,14 @@ func (x *SDK) setupOTelSDK(ctx contextx.Contextx) (func(), error) {
 		}
 	}
 
-	tracerProvider, err := newTracer(ctx, res, conn)
+	tracerProvider, err := x.newTracer(ctx, res, conn)
 	if err != nil {
 		ctx.Error("failed to create the Jaeger exporter", "error", err)
 		return nil, err
 	}
 	shutdownFuncs = append(shutdownFuncs, tracerProvider.Shutdown)
 
-	meterProvider, err := newMeter(ctx, res, conn)
+	meterProvider, err := x.newMeter(ctx, res, conn)
 	if err != nil {
 		ctx.Error("failed to create the OTLP exporter", "error", err)
 		return nil, err
@@ -98,15 +100,15 @@ func initConn(target string) (*grpc.ClientConn, error) {
 	return conn, nil
 }
 
-func newTracer(
+func (x *SDK) newTracer(
 	c context.Context,
 	res *resource.Resource,
 	conn *grpc.ClientConn,
 ) (*sdktrace.TracerProvider, error) {
 	var exporter sdktrace.SpanExporter
 	var err error
-	if conn == nil {
-		exporter, err = stdouttrace.New(stdouttrace.WithPrettyPrint())
+	if conn == nil && x.verbose {
+		exporter, err = stdouttrace.New()
 		if err != nil {
 			return nil, fmt.Errorf("failed to create stdouttrace: %w", err)
 		}
@@ -133,14 +135,14 @@ func newTracer(
 	return provider, nil
 }
 
-func newMeter(
+func (x *SDK) newMeter(
 	ctx context.Context,
 	res *resource.Resource,
 	conn *grpc.ClientConn,
 ) (p *sdkmetric.MeterProvider, err error) {
 	var exporter sdkmetric.Exporter
-	if conn == nil {
-		exporter, err = stdoutmetric.New(stdoutmetric.WithPrettyPrint())
+	if conn == nil && x.verbose {
+		exporter, err = stdoutmetric.New()
 		if err != nil {
 			return nil, fmt.Errorf("failed to create stdoutmetric: %w", err)
 		}

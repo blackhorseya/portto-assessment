@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 type InitRouterFn func(*gin.Engine)
@@ -24,6 +25,7 @@ type GinServer struct {
 func NewGinServer(log *slog.Logger, debug bool) *GinServer {
 	middlewares := []gin.HandlerFunc{
 		loggerx.GinTraceLoggingMiddleware(log),
+		otelgin.Middleware("gin-server"),
 	}
 
 	gin.SetMode(gin.ReleaseMode)

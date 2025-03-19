@@ -12,7 +12,7 @@ func TestSetupSDK(t *testing.T) {
 	target := ""
 	name := "test-service"
 
-	sdk, cleanup, err := SetupSDK(target, name)
+	sdk, cleanup, err := SetupSDK(target, name, true)
 	if err != nil {
 		t.Fatalf("failed to setup SDK: %v", err)
 	}

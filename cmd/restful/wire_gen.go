@@ -54,5 +54,5 @@ func newGinServer(ctx contextx.Contextx, appConfig *configx.Application) *httpx.
 }
 
 func newOTelSDK(appConfig *configx.Application) (*otelx.SDK, func(), error) {
-	return otelx.SetupSDK(appConfig.OTel.Target, "portto")
+	return otelx.SetupSDK(appConfig.OTel.Target, "portto", appConfig.Verbose)
 }
