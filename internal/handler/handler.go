@@ -6,6 +6,7 @@ import (
 	"portto/entity"
 	"strconv"
 
+	"github.com/blackhorseya/go-libs/contextx"
 	"github.com/blackhorseya/go-libs/httpx"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -89,8 +90,11 @@ type createCoinInput struct {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /v1/coins [post]
 func (i *handlerImpl) CreateCoin(c *gin.Context) {
+	ctx := contextx.WithContext(c.Request.Context())
+
 	var input createCoinInput
 	if err := c.ShouldBindJSON(&input); err != nil {
+		ctx.Error("invalid input", "error", err, "input", input)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -100,7 +104,8 @@ func (i *handlerImpl) CreateCoin(c *gin.Context) {
 		Description: input.Description,
 	}
 
-	if err := i.coinRepo.Create(c, coin); err != nil {
+	if err := i.coinRepo.Create(ctx, coin); err != nil {
+		ctx.Error("failed to create coin", "error", err, "coin", coin)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -121,14 +126,18 @@ func (i *handlerImpl) CreateCoin(c *gin.Context) {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /v1/coins/{id} [get]
 func (i *handlerImpl) GetCoinById(c *gin.Context) {
+	ctx := contextx.WithContext(c.Request.Context())
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		ctx.Error("invalid id", "error", err, "id", c.Param("id"))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
 
-	coin, err := i.coinRepo.GetByID(c, uint(id))
+	coin, err := i.coinRepo.GetByID(ctx, uint(id))
 	if err != nil {
+		ctx.Error("failed to get coin", "error", err, "id", id)
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
@@ -154,25 +163,31 @@ type updateCoinInput struct {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /v1/coins/{id} [patch]
 func (i *handlerImpl) UpdateCoinById(c *gin.Context) {
+	ctx := contextx.WithContext(c.Request.Context())
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		ctx.Error("invalid id", "error", err, "id", c.Param("id"))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
 
 	var input updateCoinInput
-	if err := c.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
+		ctx.Error("invalid input", "error", err, "input", input)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := i.coinRepo.UpdateDescription(c, uint(id), input.Description); err != nil {
+	if err = i.coinRepo.UpdateDescription(ctx, uint(id), input.Description); err != nil {
+		ctx.Error("failed to update coin", "error", err, "id", id)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	coin, err := i.coinRepo.GetByID(c, uint(id))
+	coin, err := i.coinRepo.GetByID(ctx, uint(id))
 	if err != nil {
+		ctx.Error("failed to get coin", "error", err, "id", id)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -193,13 +208,17 @@ func (i *handlerImpl) UpdateCoinById(c *gin.Context) {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /v1/coins/{id} [delete]
 func (i *handlerImpl) DeleteCoinById(c *gin.Context) {
+	ctx := contextx.WithContext(c.Request.Context())
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		ctx.Error("invalid id", "error", err, "id", c.Param("id"))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
 
-	if err := i.coinRepo.Delete(c, uint(id)); err != nil {
+	if err = i.coinRepo.Delete(ctx, uint(id)); err != nil {
+		ctx.Error("failed to delete coin", "error", err, "id", id)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -220,19 +239,24 @@ func (i *handlerImpl) DeleteCoinById(c *gin.Context) {
 // @Failure 500 {object} map[string]string "Internal server error"
 // @Router /v1/coins/{id}/poke [post]
 func (i *handlerImpl) PokeCoin(c *gin.Context) {
+	ctx := contextx.WithContext(c.Request.Context())
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		ctx.Error("invalid id", "error", err, "id", c.Param("id"))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
 
-	if err = i.coinRepo.Poke(c, uint(id), defaultScore); err != nil {
+	if err = i.coinRepo.Poke(ctx, uint(id), defaultScore); err != nil {
+		ctx.Error("failed to poke coin", "error", err, "id", id)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	coin, err := i.coinRepo.GetByID(c, uint(id))
+	coin, err := i.coinRepo.GetByID(ctx, uint(id))
 	if err != nil {
+		ctx.Error("failed to get coin", "error", err, "id", id)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

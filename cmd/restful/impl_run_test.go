@@ -21,7 +21,9 @@ func TestServerRun(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to unmarshal config: %v", err)
 	}
+
 	appConfig.Port = 8080
+	appConfig.Verbose = true
 
 	err = appConfig.SetupLogger()
 	if err != nil {
