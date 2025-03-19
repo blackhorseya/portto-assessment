@@ -82,7 +82,7 @@ DB_NAME=portto
 1. 確保已安裝 Docker。
 2. 執行以下命令來建構 Docker 映像檔：
    ```bash
-   docker compose --build --remove-orphans up
+   docker compose up --remove-orphans --build
    ```
 
 ## API 說明
