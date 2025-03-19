@@ -3,6 +3,8 @@ package contextx
 import (
 	"context"
 	"log/slog"
+
+	"go.opentelemetry.io/otel/trace"
 )
 
 type loggerKeyType struct{}
@@ -39,4 +41,8 @@ func GetLogger(c context.Context) *slog.Logger {
 	}
 
 	return slog.Default()
+}
+
+func (c Contextx) getSpan() trace.Span {
+	return trace.SpanFromContext(c.Context)
 }
