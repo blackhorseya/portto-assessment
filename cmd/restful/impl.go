@@ -2,6 +2,7 @@ package restful
 
 import (
 	"portto/internal/shared/configx"
+	"portto/pkg/otelx"
 	"time"
 
 	"portto/pkg/contextx"
@@ -16,6 +17,7 @@ type Server struct {
 	appConfig  *configx.Application
 	ginServer  *httpx.GinServer
 	initRouter httpx.InitRouterFn
+	otelSDK    *otelx.SDK
 }
 
 func (x *Server) Start(ctx contextx.Contextx) error {

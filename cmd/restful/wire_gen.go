@@ -7,12 +7,13 @@
 package restful
 
 import (
-	"portto/pkg/contextx"
-	"portto/pkg/httpx"
 	"portto/internal/handler"
 	"portto/internal/repository"
 	"portto/internal/shared/configx"
 	"portto/internal/shared/pgx"
+	"portto/pkg/contextx"
+	"portto/pkg/httpx"
+	"portto/pkg/otelx"
 )
 
 // Injectors from wire.go:
@@ -29,12 +30,19 @@ func NewServer(ctx contextx.Contextx, appConfig *configx.Application) (*Server, 
 		return nil, nil, err
 	}
 	initRouterFn := handler.RegisterRoutes(coinRepository)
+	sdk, cleanup2, err := newOTelSDK(appConfig)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
 	server := &Server{
 		appConfig:  appConfig,
 		ginServer:  ginServer,
 		initRouter: initRouterFn,
+		otelSDK:    sdk,
 	}
 	return server, func() {
+		cleanup2()
 		cleanup()
 	}, nil
 }
@@ -43,4 +51,8 @@ func NewServer(ctx contextx.Contextx, appConfig *configx.Application) (*Server, 
 
 func newGinServer(ctx contextx.Contextx, appConfig *configx.Application) *httpx.GinServer {
 	return httpx.NewGinServer(ctx.Logger, appConfig.Verbose)
+}
+
+func newOTelSDK(appConfig *configx.Application) (*otelx.SDK, func(), error) {
+	return otelx.SetupSDK(appConfig.OTel.Target, "portto")
 }

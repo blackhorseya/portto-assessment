@@ -27,8 +27,6 @@ func Execute() {
 }
 
 func init() {
-	viper.AutomaticEnv()
-
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose output")
 	_ = viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
 

@@ -1,16 +1,22 @@
 package configx
 
 import (
-	"github.com/spf13/viper"
 	"portto/pkg/loggerx"
+
+	"github.com/spf13/viper"
 )
 
 func init() {
+	viper.AutomaticEnv()
+
+	viper.MustBindEnv("host", "HOST")
+	viper.MustBindEnv("port", "PORT")
 	viper.MustBindEnv("db.host", "DB_HOST")
 	viper.MustBindEnv("db.port", "DB_PORT")
 	viper.MustBindEnv("db.user", "DB_USER")
 	viper.MustBindEnv("db.password", "DB_PASSWORD")
 	viper.MustBindEnv("db.name", "DB_NAME")
+	viper.MustBindEnv("otel.target", "OTEL_TARGET")
 }
 
 type Application struct {
@@ -27,6 +33,10 @@ type Application struct {
 		Password string `mapstructure:"password" json:"password" yaml:"password"`
 		Name     string `mapstructure:"name" json:"name" yaml:"name"`
 	} `mapstructure:"db" json:"db" yaml:"db"`
+
+	OTel struct {
+		Target string `mapstructure:"target" json:"target" yaml:"target"`
+	} `mapstructure:"otel" json:"otel" yaml:"otel"`
 }
 
 func (x *Application) SetupLogger() error {

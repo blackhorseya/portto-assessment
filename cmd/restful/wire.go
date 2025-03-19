@@ -9,20 +9,27 @@ import (
 	"portto/internal/repository"
 	"portto/internal/shared/configx"
 	"portto/internal/shared/pgx"
+	"portto/pkg/otelx"
 
-	"github.com/google/wire"
 	"portto/pkg/contextx"
 	"portto/pkg/httpx"
+
+	"github.com/google/wire"
 )
 
 func newGinServer(ctx contextx.Contextx, appConfig *configx.Application) *httpx.GinServer {
 	return httpx.NewGinServer(ctx.Logger, appConfig.Verbose)
 }
 
+func newOTelSDK(appConfig *configx.Application) (*otelx.SDK, func(), error) {
+	return otelx.SetupSDK(appConfig.OTel.Target, "portto")
+}
+
 func NewServer(ctx contextx.Contextx, appConfig *configx.Application) (*Server, func(), error) {
 	panic(wire.Build(
 		wire.Struct(new(Server), "*"),
 		newGinServer,
+		newOTelSDK,
 		handler.RegisterRoutes,
 		repository.NewCoinRepository,
 		pgx.NewClient,
