@@ -6,6 +6,10 @@ help: ## show help
 	@grep -hE '^[ a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 	awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-17s\033[0m %s\n", $$1, $$2}'
 
+.PHONY: clean
+clean: ## Clean up the build artifacts
+	rm -rf $(BIN) coverage.txt dist .env
+
 .PHONY: install
 install: install-tools
 
