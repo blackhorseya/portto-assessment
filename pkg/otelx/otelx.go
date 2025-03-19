@@ -9,6 +9,8 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
+	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/propagation"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -42,13 +44,6 @@ func SetupSDK(target string, name string) (*SDK, func(), error) {
 }
 
 func (x *SDK) setupOTelSDK(ctx contextx.Contextx) (func(), error) {
-	if x.target == "" {
-		ctx.Warn("OpenTelemetry is disabled")
-		return func() {
-			ctx.Debug("noop")
-		}, nil
-	}
-
 	ctx.Info(
 		"setting up OpenTelemetry SDK",
 		"service_name", x.serviceName,
@@ -63,10 +58,13 @@ func (x *SDK) setupOTelSDK(ctx contextx.Contextx) (func(), error) {
 		return nil, err
 	}
 
-	conn, err := initConn(x.target)
-	if err != nil {
-		ctx.Error("failed to create gRPC client", "error", err)
-		return nil, err
+	var conn *grpc.ClientConn
+	if x.target != "" {
+		conn, err = initConn(x.target)
+		if err != nil {
+			ctx.Error("failed to create gRPC client", "error", err)
+			return nil, err
+		}
 	}
 
 	tracerProvider, err := newTracer(ctx, res, conn)
@@ -105,9 +103,18 @@ func newTracer(
 	res *resource.Resource,
 	conn *grpc.ClientConn,
 ) (*sdktrace.TracerProvider, error) {
-	exporter, err := otlptracegrpc.New(c, otlptracegrpc.WithGRPCConn(conn))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create the Jaeger exporter: %w", err)
+	var exporter sdktrace.SpanExporter
+	var err error
+	if conn == nil {
+		exporter, err = stdouttrace.New(stdouttrace.WithPrettyPrint())
+		if err != nil {
+			return nil, fmt.Errorf("failed to create stdouttrace: %w", err)
+		}
+	} else {
+		exporter, err = otlptracegrpc.New(c, otlptracegrpc.WithGRPCConn(conn))
+		if err != nil {
+			return nil, fmt.Errorf("failed to create the Jaeger exporter: %w", err)
+		}
 	}
 
 	processor := sdktrace.NewBatchSpanProcessor(exporter)
@@ -131,9 +138,17 @@ func newMeter(
 	res *resource.Resource,
 	conn *grpc.ClientConn,
 ) (p *sdkmetric.MeterProvider, err error) {
-	exporter, err := otlpmetricgrpc.New(ctx, otlpmetricgrpc.WithGRPCConn(conn))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create the OTLP exporter: %w", err)
+	var exporter sdkmetric.Exporter
+	if conn == nil {
+		exporter, err = stdoutmetric.New(stdoutmetric.WithPrettyPrint())
+		if err != nil {
+			return nil, fmt.Errorf("failed to create stdoutmetric: %w", err)
+		}
+	} else {
+		exporter, err = otlpmetricgrpc.New(ctx, otlpmetricgrpc.WithGRPCConn(conn))
+		if err != nil {
+			return nil, fmt.Errorf("failed to create the OTLP exporter: %w", err)
+		}
 	}
 
 	provider := sdkmetric.NewMeterProvider(
