@@ -4,8 +4,8 @@ import (
 	"portto/internal/shared/configx"
 	"time"
 
-	"github.com/blackhorseya/go-libs/contextx"
-	"github.com/blackhorseya/go-libs/httpx"
+	"portto/pkg/contextx"
+	"portto/pkg/httpx"
 )
 
 // @title Swagger Example API

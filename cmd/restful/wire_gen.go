@@ -7,8 +7,8 @@
 package restful
 
 import (
-	"github.com/blackhorseya/go-libs/contextx"
-	"github.com/blackhorseya/go-libs/httpx"
+	"portto/pkg/contextx"
+	"portto/pkg/httpx"
 	"portto/internal/handler"
 	"portto/internal/repository"
 	"portto/internal/shared/configx"

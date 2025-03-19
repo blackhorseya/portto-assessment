@@ -4,10 +4,10 @@ import (
 	"net/http"
 	_ "portto/docs" // import the generated swagger docs
 	"portto/entity"
+	"portto/pkg/contextx"
+	"portto/pkg/httpx"
 	"strconv"
 
-	"github.com/blackhorseya/go-libs/contextx"
-	"github.com/blackhorseya/go-libs/httpx"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"

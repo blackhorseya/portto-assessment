@@ -10,9 +10,9 @@ import (
 	"portto/internal/shared/configx"
 	"portto/internal/shared/pgx"
 
-	"github.com/blackhorseya/go-libs/contextx"
-	"github.com/blackhorseya/go-libs/httpx"
 	"github.com/google/wire"
+	"portto/pkg/contextx"
+	"portto/pkg/httpx"
 )
 
 func newGinServer(ctx contextx.Contextx, appConfig *configx.Application) *httpx.GinServer {

@@ -1,8 +1,8 @@
 package configx
 
 import (
-	"github.com/blackhorseya/go-libs/loggerx"
 	"github.com/spf13/viper"
+	"portto/pkg/loggerx"
 )
 
 func init() {

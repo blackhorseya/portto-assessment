@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/blackhorseya/go-libs/contextx"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/spf13/viper"
+	"portto/pkg/contextx"
 )
 
 func TestServerRun(t *testing.T) {
