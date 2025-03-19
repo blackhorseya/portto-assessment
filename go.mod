@@ -2,8 +2,6 @@ module portto
 
 go 1.23.0
 
-toolchain go1.23.4
-
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golangci/golangci-lint v1.64.7
