@@ -1,21 +1,22 @@
-name: Code Review GPT
+name: PR Agent
 
 on:
   pull_request:
-    branches:
-      - main
-
+    types: [opened, reopened, ready_for_review]
+  issue_comment:
 jobs:
-  run_code_review:
+  pr_agent_job:
+    if: ${{ github.event.sender.type != 'Bot' }}
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: write
+    name: Run pr agent on every pull request, respond to user comments
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Code Review GPT
-        uses: mattzcarey/code-review-gpt@v0.1.8
-        with:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          MODEL: 'gpt-4o-mini'
-          GITHUB_TOKEN: ${{ github.token }}
+      - name: PR Agent action step
+        id: pragent
+        uses: Codium-ai/pr-agent@main
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
